@@ -1,0 +1,61 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (für HTML/CSS Linting)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Linting-Tools installieren
+        run: |
+          npm install -g htmlhint stylelint stylelint-config-standard
+          # Basis-Konfiguration für Stylelint erstellen, falls nicht vorhanden
+          echo '{"extends": "stylelint-config-standard"}' > .stylelintrc.json
+
+      - name: HTML prüfen (Lint)
+        run: |
+          # Nur warnen bei HTMLHint-Fehlern, um den Build nicht hart abzubrechen und den Agent-Workflow zu stören, aber Feedback zu geben.
+          htmlhint public/**/*.html || true
+
+      - name: CSS prüfen (Lint)
+        run: |
+          stylelint "public/assets/css/**/*.css" || true
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          local-dir: ./public/
+          # FTP_BASE_DIR = Webroot von infinitewebsolutions.de
+          # Repo-Name wird automatisch als Unterverzeichnis angehängt
+          server-dir: ${{ secrets.FTP_BASE_DIR }}/${{ github.event.repository.name }}/
+          state-name: .ftp-deploy-sync-state.json
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/*.map
+          dangerous-clean-slate: false
+          log-level: standard
+
+      - name: Vorschau-URL ausgeben
+        run: |
+          echo ""
+          echo "✅ Vorschau live unter:"
+          echo "   https://infinitewebsolutions.de/${{ github.event.repository.name }}/"
+          echo ""

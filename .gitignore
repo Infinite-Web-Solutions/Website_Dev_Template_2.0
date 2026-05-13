@@ -1,0 +1,16 @@
+# SMTP-Credentials (niemals einchecken!)
+server/mail-config.php
+.env
+
+# Dependencies
+vendor/
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

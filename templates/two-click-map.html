@@ -1,0 +1,52 @@
+<!-- Datenschutzfreundliche "Two-Click" Karte -->
+<!-- Lädt externe Google Maps Ressourcen erst NACH der Zustimmung des Nutzers -->
+<div class="map-container js-map-container">
+  <div class="map-placeholder js-map-placeholder">
+    <div class="map-placeholder__content">
+      <h3 class="map-placeholder__title">Karte aktivieren</h3>
+      <p class="map-placeholder__text">
+        Durch das Klicken auf "Karte laden" akzeptieren Sie die Datenschutzbestimmungen von Google und stimmen zu, dass Daten an Google Server übertragen werden.
+      </p>
+      <button class="button button--primary js-load-map" data-map-url="https://www.google.com/maps/embed?pb=YOUR_EMBED_URL">
+        Karte laden
+      </button>
+      <p class="map-placeholder__note">
+        <a href="/datenschutz.html" target="_blank">Weitere Informationen im Datenschutz</a>
+      </p>
+    </div>
+  </div>
+  <!-- Iframe-Container, anfangs leer -->
+  <div class="map-iframe-wrapper js-map-iframe-wrapper" aria-hidden="true" style="display: none;"></div>
+</div>
+
+<!--
+<script>
+  const mapContainer = document.querySelector('.js-map-container');
+  if (mapContainer) {
+    const btn = mapContainer.querySelector('.js-load-map');
+    const placeholder = mapContainer.querySelector('.js-map-placeholder');
+    const iframeWrapper = mapContainer.querySelector('.js-map-iframe-wrapper');
+
+    btn.addEventListener('click', () => {
+      const url = btn.getAttribute('data-map-url');
+      const iframe = document.createElement('iframe');
+
+      iframe.src = url;
+      iframe.width = '100%';
+      iframe.height = '450';
+      iframe.style.border = '0';
+      iframe.allowFullscreen = true;
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      iframe.title = 'Google Maps Standort';
+
+      iframeWrapper.appendChild(iframe);
+
+      // Platzhalter ausblenden, Karte anzeigen
+      placeholder.style.display = 'none';
+      iframeWrapper.style.display = 'block';
+      iframeWrapper.setAttribute('aria-hidden', 'false');
+    });
+  }
+</script>
+-->

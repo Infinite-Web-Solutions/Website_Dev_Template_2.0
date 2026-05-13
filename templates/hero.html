@@ -1,0 +1,36 @@
+<!-- Hero Sektion -->
+<!-- Hohe fetchpriority für LCP. Optimiert für Core Web Vitals. -->
+<section class="hero">
+  <div class="hero__bg">
+    <!-- WebP mit srcsets für responsives Laden -->
+    <picture>
+      <source type="image/webp"
+              srcset="/assets/img/hero-400.webp 400w,
+                      /assets/img/hero-800.webp 800w,
+                      /assets/img/hero-1200.webp 1200w"
+              sizes="100vw">
+      <!-- Fallback für alte Browser -->
+      <img src="/assets/img/hero-1200.jpg"
+           alt="[Aussagekräftige Bildbeschreibung, z.B. Handwerker bei der Arbeit]"
+           width="1200"
+           height="800"
+           fetchpriority="high"
+           class="hero__img">
+    </picture>
+    <div class="hero__overlay" aria-hidden="true"></div>
+  </div>
+
+  <div class="container hero__content">
+    <h1 class="hero__title">
+      <span class="hero__title-sub">[Branche/Ort]</span>
+      [Einzigartiger USP / Slogan, z.B. Qualität vom Meisterbetrieb]
+    </h1>
+    <p class="hero__text">
+      [1-2 Sätze, die das größte Problem des Kunden lösen und Vertrauen aufbauen.]
+    </p>
+    <div class="hero__actions">
+      <a href="/kontakt.html" class="button button--primary">Jetzt anfragen</a>
+      <a href="/leistungen.html" class="button button--secondary">Unsere Leistungen</a>
+    </div>
+  </div>
+</section>

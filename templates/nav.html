@@ -1,0 +1,66 @@
+<!-- Sticky Navigationsleiste -->
+<!-- Benötigt ein `<nav>` Tag und ARIA-Attribute für Barrierefreiheit -->
+<header class="header js-header">
+  <div class="container header__inner">
+    <a href="/" class="header__logo" aria-label="Zur Startseite">
+      <!-- Nutze Inline-SVG oder ein img-Tag. Z.B.: -->
+      <span class="header__logo-text">Firmenname</span>
+    </a>
+
+    <!-- Mobile Menü Toggle -->
+    <button class="header__toggle js-menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Menü öffnen">
+      <span class="header__toggle-icon" aria-hidden="true"></span>
+    </button>
+
+    <!-- Hauptnavigation -->
+    <nav id="main-nav" class="header__nav js-main-nav">
+      <ul class="nav-list">
+        <li class="nav-list__item"><a href="/" class="nav-list__link" aria-current="page">Startseite</a></li>
+        <li class="nav-list__item"><a href="/leistungen.html" class="nav-list__link">Leistungen</a></li>
+        <li class="nav-list__item"><a href="/ueber-uns.html" class="nav-list__link">Über uns</a></li>
+        <li class="nav-list__item"><a href="/kontakt.html" class="nav-list__link nav-list__link--button">Kontakt</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- JavaScript für Menü & Sticky-Verhalten (in main.js einfügen) -->
+<!--
+<script>
+  // Mobile Navigation
+  const toggle = document.querySelector('.js-menu-toggle');
+  const nav = document.querySelector('.js-main-nav');
+
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', !isExpanded);
+      toggle.setAttribute('aria-label', !isExpanded ? 'Menü schließen' : 'Menü öffnen');
+      nav.classList.toggle('is-open');
+      document.body.classList.toggle('has-scroll-lock'); // Verhindert Scrollen bei offenem Menü
+    });
+  }
+
+  // Sticky Header Logik
+  const header = document.querySelector('.js-header');
+  let lastScroll = 0;
+
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+    if (currentScroll <= 0) {
+      header.classList.remove('is-sticky');
+      return;
+    }
+    if (currentScroll > lastScroll && !header.classList.contains('is-hidden')) {
+      // Nach unten scrollen
+      header.classList.remove('is-sticky');
+      header.classList.add('is-hidden');
+    } else if (currentScroll < lastScroll && header.classList.contains('is-hidden')) {
+      // Nach oben scrollen
+      header.classList.remove('is-hidden');
+      header.classList.add('is-sticky');
+    }
+    lastScroll = currentScroll;
+  });
+</script>
+-->
