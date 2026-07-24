@@ -136,8 +136,8 @@ bewegen, und der statische Fallback muss vollwertig aussehen.
 
 ```html
 <!-- Am Body-Ende, immer mit defer -->
-<script src="/assets/js/vendor/lenis.min.js" defer></script>
-<script src="/assets/js/main.js" defer></script>
+<script src="assets/js/vendor/lenis.min.js" defer></script>
+<script src="assets/js/main.js" defer></script>
 ```
 
 ```javascript
@@ -159,9 +159,9 @@ Pos1/Ende) und den Skip-Link nicht brechen — nach Einbau mit Tastatur testen.
 
 ```html
 <!-- Reihenfolge: gsap vor ScrollTrigger, beide defer, vor main.js -->
-<script src="/assets/js/vendor/gsap.min.js" defer></script>
-<script src="/assets/js/vendor/ScrollTrigger.min.js" defer></script>
-<script src="/assets/js/main.js" defer></script>
+<script src="assets/js/vendor/gsap.min.js" defer></script>
+<script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="assets/js/main.js" defer></script>
 ```
 
 ```javascript
@@ -214,9 +214,9 @@ gesamte Inhalt sichtbar bleiben (kein `opacity: 0` im CSS als Startzustand).
 
 ```html
 <!-- Nur auf der Seite mit Vanta-Hero, am Body-Ende -->
-<script src="/assets/js/vendor/three.min.js" defer></script>
-<script src="/assets/js/vendor/vanta.waves.min.js" defer></script>
-<script src="/assets/js/main.js" defer></script>
+<script src="assets/js/vendor/three.min.js" defer></script>
+<script src="assets/js/vendor/vanta.waves.min.js" defer></script>
+<script src="assets/js/main.js" defer></script>
 ```
 
 ```javascript

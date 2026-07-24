@@ -56,9 +56,10 @@ Quellen:
 - Font Squirrel (lizenzfrei)
 
 ```css
+/* url() ist relativ zur CSS-Datei (assets/css/) → ../fonts/ */
 @font-face {
   font-family: 'DisplayFont';
-  src: url('/assets/fonts/display.woff2') format('woff2');
+  src: url('../fonts/display.woff2') format('woff2');
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;

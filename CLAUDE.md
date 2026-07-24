@@ -94,6 +94,24 @@ Anstatt Standard-Komponenten komplett neu zu erfinden, binde die hochwertigen, b
 | Bilder | kebab-case + WebP | hero-team.webp |
 | IDs | kebab-case | id="kontakt-formular" |
 
+## Pfad-Konvention (Pflicht)
+
+Die Vorschau läuft im Unterverzeichnis `infinitewebsolutions.de/[slug]/`, die
+Live-Site im Domain-Root. Damit dieselben Dateien in **beiden** funktionieren:
+
+| Verwendung | Konvention | Beispiel |
+|-----------|-----------|---------|
+| Interne Links (alle Seiten flach in `public/`) | **relativ, ohne führenden Slash** | `href="kontakt.html"` |
+| Lokale Assets in HTML (`link`/`script`/`img`) | **relativ, ohne führenden Slash** | `src="assets/js/main.js"` |
+| `url()` in CSS (Datei liegt in `assets/css/`) | **relativ zur CSS-Datei** | `url('../fonts/inter.woff2')` |
+| Formular-Action | **relativ** | `action="server/contact.php"` |
+| Canonical, `og:image`, `sitemap.xml`, JSON-LD `url`/`item` | **absolut mit voller Domain** | `https://www.kunde.de/kontakt.html` |
+| Sprung-Anker (Skip-Link, FAQ) | **Fragment** | `href="#main-content"` |
+
+> Niemals führender Slash (`/kontakt.html`, `/assets/...`) — bricht die
+> Vorschau im Unterverzeichnis. Bei Mehrsprachigkeit (`en/`-Unterordner)
+> aus der Unterseite mit `../` auf Root-Assets verweisen.
+
 ## Ordnerstruktur (Pflicht)
 
 ```
@@ -115,11 +133,13 @@ public/
     │   ├── variables.css
     │   └── style.css
     ├── js/
-    │   └── main.js
+    │   ├── main.js
+    │   └── vendor/     ← Lokal vendorte Libs (NUR bei Bedarf: Lenis/GSAP/Vanta, siehe 09-motion-design.md)
     ├── fonts/          ← Lokale Fonts (DSGVO-Pflicht)
     └── img/
 server/
-└── contact.php         ← Außerhalb des Webroots (kopiere aus Repo falls leer)
+├── contact.php         ← Kopiere aus Repo falls Formular benötigt
+└── mail-config.php     ← SMTP-Daten, NIE committen (gitignored), manuell per FTP
 docs/
 └── customer-documentation.md
 .htaccess               ← (Kopiere aus .htaccess.template)
@@ -183,9 +203,16 @@ docs/
 - [ ] font-display: swap in allen @font-face Regeln
 - [ ] JS: defer oder am Body-Ende
 - [ ] Keine ungenutzten CSS-Regeln
-- [ ] Keine externen CDN-Abhängigkeiten
+- [ ] Keine externen CDN-Abhängigkeiten (lokal vendorte Dateien in assets/js/vendor/ sind erlaubt)
+- [ ] Alle internen Links & Assets relativ (kein führender Slash) — Vorschau im Unterverzeichnis testen
 - [ ] Gzip in .htaccess aktiv
 - [ ] Browser-Caching in .htaccess konfiguriert
+
+### Motion-Libraries (nur wenn im Brief vorgesehen — sonst überspringen)
+- [ ] Einsatz durch Brief gedeckt, nicht Standard
+- [ ] Lenis/GSAP/Vanta lokal aus assets/js/vendor/, kein CDN
+- [ ] `prefers-reduced-motion` vor jeder Init geprüft UND getestet
+- [ ] Vanta nur im Hero, Three.js bleibt r134, statischer Fallback vollwertig
 
 ### Design-Qualität
 - [ ] Sieht es generisch aus? → Wenn ja: überarbeiten

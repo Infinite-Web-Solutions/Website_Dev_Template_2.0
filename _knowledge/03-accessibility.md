@@ -36,7 +36,7 @@ Bei mehrsprachigen Projekten: `lang`-Attribut der jeweiligen Seite bestimmt die 
   <header role="banner">
     <nav aria-label="Hauptnavigation">
       <ul>
-        <li><a href="/" aria-current="page">Home</a></li>
+        <li><a href="index.html" aria-current="page">Home</a></li>
       </ul>
       <button aria-expanded="false" aria-controls="mobile-menu" aria-label="Menü öffnen">
         <span aria-hidden="true">&#9776;</span>
