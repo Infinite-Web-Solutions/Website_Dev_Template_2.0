@@ -1,0 +1,88 @@
+<!-- Hero Sektion mit Vanta.js WebGL-Hintergrund -->
+<!-- NUR einsetzen wenn der Brief es vorsieht (Premium-Feel, Tech-Startup) — siehe _knowledge/09-motion-design.md -->
+<!-- Der CSS-Fallback-Hintergrund MUSS ohne JS, ohne WebGL und bei Reduced Motion vollwertig aussehen. -->
+<section class="hero hero--vanta" id="hero-vanta">
+  <div class="container hero__content">
+    <h1 class="hero__title">
+      <span class="hero__title-sub">[Branche/Ort]</span>
+      [Einzigartiger USP / Slogan]
+    </h1>
+    <p class="hero__text">
+      [1-2 Sätze, die das größte Problem des Kunden lösen und Vertrauen aufbauen.]
+    </p>
+    <div class="hero__actions">
+      <a href="/kontakt.html" class="button button--primary">Jetzt anfragen</a>
+      <a href="/leistungen.html" class="button button--secondary">Unsere Leistungen</a>
+    </div>
+  </div>
+</section>
+
+<!--
+  CSS (nach style.css übernehmen):
+
+  .hero--vanta {
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    /* Statischer Fallback: sichtbar ohne JS, ohne WebGL, bei Reduced Motion.
+       Farben an das Farbkonzept des Projekts anpassen! */
+    background: linear-gradient(160deg, var(--color-primary) 0%, #0f1626 100%);
+    color: #fff;
+  }
+  .hero--vanta .hero__content {
+    position: relative;
+    z-index: 1; /* Inhalt über dem Vanta-Canvas halten */
+  }
+  /* Kontrast sichern: Vanta-Farben so wählen dass Text 4.5:1 erreicht,
+     sonst halbtransparentes Overlay zwischen Canvas und Text legen. */
+-->
+
+<!--
+  Scripts (am Body-Ende, NUR auf Seiten mit Vanta-Hero — i. d. R. nur index.html):
+
+  <script src="/assets/js/vendor/three.min.js" defer></script>
+  <script src="/assets/js/vendor/vanta.waves.min.js" defer></script>
+  <script src="/assets/js/main.js" defer></script>
+
+  three.min.js ist fest auf r134 gepinnt — NIEMALS separat aktualisieren
+  (neuere Three.js-Versionen brechen Vanta)! Nur EINE vanta.[effect].min.js
+  einbinden — die des im Brief gewählten Effekts (waves, net, birds, fog).
+-->
+
+<!--
+  JavaScript (nach main.js übernehmen):
+
+  function initVantaHero() {
+    // Pflicht-Check 1: Reduced Motion respektieren (WCAG 2.3.3)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // Pflicht-Check 2: Element und Library vorhanden (Seite ohne Vanta-Scripts?)
+    const heroEl = document.getElementById('hero-vanta');
+    if (!heroEl || typeof VANTA === 'undefined') return;
+
+    // Pflicht-Check 3: WebGL verfügbar — sonst bleibt der CSS-Fallback stehen
+    const testCanvas = document.createElement('canvas');
+    if (!testCanvas.getContext('webgl') && !testCanvas.getContext('experimental-webgl')) return;
+
+    const vantaEffect = VANTA.WAVES({
+      el: heroEl,
+      mouseControls: true,
+      touchControls: false,   // Touch-Scrolling nicht kapern
+      gyroControls: false,
+      minHeight: 200,
+      minWidth: 200,
+      color: 0x1a1a2e,        // an --color-primary anlehnen, Kontrast prüfen!
+      waveHeight: 15,
+      waveSpeed: 0.6,
+      zoom: 0.9
+    });
+
+    // Schaltet der User Reduced Motion zur Laufzeit ein: Effekt zerstören
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
+      if (e.matches) vantaEffect.destroy();
+    });
+  }
+
+  initVantaHero();
+-->

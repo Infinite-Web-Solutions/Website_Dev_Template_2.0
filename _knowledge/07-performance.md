@@ -146,6 +146,14 @@ Wenn nur eine Bildgröße vorhanden: mindestens WebP + width/height + loading="l
 <script src="/assets/js/main.js" defer></script>
 ```
 
+**„Keine externen CDN-Abhängigkeiten" richtig verstanden:** Verboten ist das
+*Laden von fremden Servern* (unpkg, jsdelivr, cdnjs, fonts.googleapis.com, …).
+Lokal vendorte Third-Party-Dateien in `public/assets/js/vendor/` (z. B. Lenis,
+GSAP, Vanta — siehe `09-motion-design.md`) sind davon **nicht** betroffen: Sie
+werden vom eigenen Server ausgeliefert, laufen unter `script-src 'self'` und
+übertragen keine Besucherdaten an Dritte. Das JS-Gewicht zählt trotzdem —
+jede Library muss durch den Brief gerechtfertigt sein.
+
 ```javascript
 // Intersection Observer für Einblend-Animationen
 const observer = new IntersectionObserver((entries) => {
@@ -188,6 +196,7 @@ Regeln:
 - [ ] `font-display: swap` in allen `@font-face` Regeln
 - [ ] JS: `defer` oder am Body-Ende
 - [ ] Keine ungenutzten CSS-Regeln
-- [ ] Keine externen CDN-Abhängigkeiten
+- [ ] Keine externen CDN-Abhängigkeiten (lokal vendorte Dateien in `assets/js/vendor/` sind erlaubt)
+- [ ] Bei Vanta-Einsatz: Bundle-Size geprüft (~120 kB gzipped extra wegen Three.js) — nur im Hero, nur auf Seiten die es nutzen, Effekt durch Brief gerechtfertigt
 - [ ] Gzip/Deflate in .htaccess aktiviert
 - [ ] Browser-Caching in .htaccess konfiguriert (1 Jahr für Assets)
