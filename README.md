@@ -40,8 +40,10 @@ statischen Kunden-Websites mit Claude Code.
 
 ## Automatisches Deployment
 
-Bei jedem Push auf `main` wird `public/` automatisch per **FTPS** auf den Server deployt.
+Bei jedem Push auf `main` werden `public/` (Website inkl. `public/.htaccess`) und
+`server/` (Formular-Handler) automatisch per **FTPS** auf den Server deployt.
 Nur geänderte Dateien werden übertragen (differenzieller Sync via State-Datei).
+Vorher läuft ein Lint-Gate (htmlhint + stylelint) — bei Fehlern wird nicht deployt.
 
 ### GitHub Secrets konfigurieren
 

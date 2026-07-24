@@ -62,7 +62,7 @@ Anstatt Standard-Komponenten komplett neu zu erfinden, binde die hochwertigen, b
 ### Phase 3 — Build (in dieser Reihenfolge)
 
 *Nutze für gängige Elemente (Nav, Hero, Footer, Formulare, Maps) immer die Vorlagen aus `templates/` als Ausgangsbasis!*
-*Kopiere `.htaccess.template` nach `.htaccess` und `server/contact.php` (falls nicht vorhanden).*
+*Kopiere `.htaccess.template` nach `public/.htaccess` (nur dort wird sie deployt!) und nutze das vorhandene `server/contact.php`.*
 
 1. public/assets/css/normalize.css
 2. public/assets/css/variables.css  (Design Tokens als CSS Custom Properties)
@@ -79,7 +79,7 @@ Anstatt Standard-Komponenten komplett neu zu erfinden, binde die hochwertigen, b
 13. public/sitemap.xml
 14. public/robots.txt
 15. server/contact.php  (nur wenn Kontaktformular)
-16. .htaccess  (Security Headers)
+16. public/.htaccess  (Security Headers — aus .htaccess.template)
 **→ Stopp. Warte auf Bestätigung bevor Phase 4 startet.**
 
 ### Phase 4 — Review & Dokumentation
@@ -120,7 +120,8 @@ Live-Site im Domain-Root. Damit dieselben Dateien in **beiden** funktionieren:
 
 ```
 templates/              ← Hochwertige UI-Komponenten-Vorlagen
-public/
+public/                 ← Webroot: NUR dieser Ordner + server/ werden deployt
+├── .htaccess           ← Security Headers (Kopie von .htaccess.template)
 ├── index.html
 ├── [seite].html
 ├── kontakt.html
@@ -146,7 +147,7 @@ server/
 └── mail-config.php     ← SMTP-Daten, NIE committen (gitignored), manuell per FTP
 docs/
 └── customer-documentation.md
-.htaccess               ← (Kopiere aus .htaccess.template)
+.htaccess.template      ← Vorlage — nach public/.htaccess kopieren
 ```
 
 ## Qualitätscheckliste (vor Abgabe vollständig abhaken)
