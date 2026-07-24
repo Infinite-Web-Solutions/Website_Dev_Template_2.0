@@ -30,6 +30,7 @@ statischen Kunden-Websites mit Claude Code.
 | _knowledge/06-forms.md | Formulare & PHPMailer SMTP |
 | _knowledge/07-performance.md | Core Web Vitals & CSS Tokens |
 | _knowledge/08-seo-geo.md | SEO & GEO (llms.txt, facts.html) |
+| _knowledge/09-motion-design.md | Optionale Motion-Libraries (Lenis, GSAP, Vanta) |
 
 ## Stack
 - HTML5 + CSS3 + Vanilla JS

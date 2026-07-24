@@ -1,81 +1,58 @@
 # Security — Headers & Formular-Sicherheit
 
-## .htaccess (vollständig, Apache / all-inkl)
+## .htaccess — kanonische Vorlage: `.htaccess.template` (Repo-Root)
 
-```apache
-# HTTP → HTTPS
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+Die vollständige, getestete Konfiguration liegt in **`.htaccess.template`**.
+In Phase 3 nach `public/.htaccess` kopieren — nicht neu erfinden, nicht
+hier aus einem Snippet abtippen.
 
-# www → non-www
-RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+Was die Vorlage abdeckt:
 
-<IfModule mod_headers.c>
-  Header always set X-Content-Type-Options "nosniff"
-  Header always set X-Frame-Options "SAMEORIGIN"
-  Header always set X-XSS-Protection "1; mode=block"
-  Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
-  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-  # CSP — ANPASSEN je nach genutzten Ressourcen
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
-</IfModule>
+| Block | Zweck |
+|-------|-------|
+| HTTPS- & www-Redirect | Erzwingt eine kanonische URL |
+| Security Headers | nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS |
+| Content Security Policy | `script-src 'self'` — kein `unsafe-inline`, kein Wildcard |
+| `Options -Indexes` | Kein Verzeichnis-Browsing |
+| FilesMatch / Files | Sperrt .env, .log, .sql, … und mail-config.php |
+| mod_deflate / mod_expires | Gzip + Browser-Caching (1 Jahr Assets, 1 h HTML) |
 
-Options -Indexes
+**Pro Projekt anpassen:**
+- CSP `frame-src https://www.google.com/maps/` nur behalten, wenn die
+  Two-Click-Map im Einsatz ist — sonst auf `frame-src 'none'` setzen.
+- CSP muss zum tatsächlichen Code passen: keine Quelle erlauben, die die
+  Website nicht nutzt (Checkliste: „kein wildcard").
+- `X-XSS-Protection` steht bewusst auf `"0"` — der alte Browser-Auditor ist
+  fehleranfällig und von OWASP zur Deaktivierung empfohlen. Nicht auf
+  `"1; mode=block"` „zurückkorrigieren".
 
-<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|sql|bak|env|php)$">
-  <FilesMatch "\.php$">
-    # Nur in öffentlichen Verzeichnissen blockieren
-  </FilesMatch>
-  Order Allow,Deny
-</FilesMatch>
+## PHP-Formular-Sicherheit — kanonische Implementierung: `server/contact.php`
 
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript font/woff2
-</IfModule>
+Der vollständige, funktionsfähige Handler liegt in **`server/contact.php`**.
+Nicht duplizieren — bei Bedarf dort anpassen. Diese Schutzschichten sind
+Pflicht und bereits implementiert:
 
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresByType text/css "access plus 1 year"
-  ExpiresByType application/javascript "access plus 1 year"
-  ExpiresByType image/webp "access plus 1 year"
-  ExpiresByType font/woff2 "access plus 1 year"
-  ExpiresByType text/html "access plus 1 hour"
-</IfModule>
-```
+1. **Nur POST** — alle anderen Methoden → 405
+2. **CSRF-Schutz per Same-Origin-Check** — Origin- (Fallback: Referer-)
+   Header muss zum eigenen Host passen. Session-Token sind bei statischem
+   HTML nicht einbettbar, deshalb dieser Ansatz (form-action 'self' in der
+   CSP ergänzt ihn browserseitig).
+3. **Honeypot** — verstecktes Feld `website`; ausgefüllt → Erfolg vortäuschen,
+   nichts senden
+4. **Rate Limiting** — 1 Anfrage / 60 s pro Session; Zeitstempel erst nach
+   erfolgreichem Versand setzen
+5. **Input-Sanitierung** — `htmlspecialchars(…, ENT_QUOTES, 'UTF-8')`,
+   `FILTER_SANITIZE_EMAIL`, Längen-Validierung mit `mb_strlen`
+6. **Header-Injection-Schutz** — `\r`/`\n` in Name oder E-Mail → 400
+7. **PHPMailer über SMTP** — niemals `mail()`; Fehler nur per `error_log`,
+   nie Interna an den Client
 
-## PHP Formular-Sicherheit
+SMTP-Zugangsdaten liegen ausschließlich in `server/mail-config.php`
+(gitignored, per `.htaccess` gesperrt, manuell deployt — siehe 06-forms.md).
 
-```php
-<?php
-session_start();
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit; }
+## Grundregeln
 
-// CSRF
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-  http_response_code(403); die('Sicherheitsfehler');
-}
-
-// Honeypot
-if (!empty($_POST['website'])) { http_response_code(200); die(); }
-
-// Rate Limiting
-if (isset($_SESSION['last_submit']) && time() - $_SESSION['last_submit'] < 60) {
-  http_response_code(429); die(json_encode(['success' => false, 'message' => 'Bitte warten']));
-}
-$_SESSION['last_submit'] = time();
-
-// Input sanitisieren
-$name    = htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8');
-$email   = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
-$message = htmlspecialchars(trim($_POST['message'] ?? ''), ENT_QUOTES, 'UTF-8');
-
-// Header Injection verhindern
-if (preg_match('/[\r\n]/', $name . $email)) { http_response_code(400); exit; }
-
-// Validierung
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { http_response_code(400); exit; }
-if (strlen($message) < 10 || strlen($message) > 5000) { http_response_code(400); exit; }
-```
+- Keine API-Keys, Passwörter oder SMTP-Daten in HTML/JS (siehe CLAUDE.md)
+- Fehlermeldungen an Nutzer sind generisch — Details nur ins `error_log`
+- Jede neue externe Ressource erfordert eine bewusste CSP-Erweiterung —
+  im Zweifel lokal vendoren (09-motion-design.md)

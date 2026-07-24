@@ -2,8 +2,8 @@
 server/mail-config.php
 .env
 
-# Dependencies
-vendor/
+# Dependencies (nur Composer-vendor im Root — public/assets/js/vendor/ wird eingecheckt!)
+/vendor/
 node_modules/
 
 # OS

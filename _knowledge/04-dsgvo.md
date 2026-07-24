@@ -33,15 +33,16 @@ Option B — Bunny Fonts CDN (DSGVO-konform, EU-Server):
 
 ```css
 /* NUR wenn die Datei physisch in public/assets/fonts/ liegt! */
+/* url() ist relativ zur CSS-Datei (assets/css/) → ../fonts/ */
 @font-face {
   font-family: 'Inter';
-  src: url('/assets/fonts/inter-regular.woff2') format('woff2');
+  src: url('../fonts/inter-regular.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/assets/fonts/inter-bold.woff2') format('woff2');
+  src: url('../fonts/inter-bold.woff2') format('woff2');
   font-weight: 700;
   font-display: swap;
 }
@@ -51,18 +52,25 @@ Option B — Bunny Fonts CDN (DSGVO-konform, EU-Server):
 
 ## Google Maps — Two-Click-Lösung
 
+Fertige, barrierefreie Vorlage: **`templates/two-click-map.html`** (kopieren,
+nicht neu bauen). Prinzip: Vor dem Klick wird **keine** Google-Ressource
+geladen — erst der Button injiziert das iframe.
+
+Pflicht-Details:
+- Embed-URL muss vom Host `https://www.google.com/maps/embed?pb=…` kommen —
+  genau dieser Host steht in der CSP (`frame-src`, siehe `.htaccess.template`).
+  **Nicht** `maps.google.com/maps?q=…` verwenden — anderer Host, von der CSP
+  blockiert.
+- Ohne Two-Click-Map: `frame-src` in der CSP auf `'none'` setzen.
+- `onclick`-Handler vermeiden (CSP verbietet Inline-Skripte) — Event-Listener
+  in `main.js`, wie im Template gezeigt.
+
 ```html
-<div class="map-consent" id="map-wrapper">
-  <p>Diese Karte wird von Google Maps bereitgestellt.
-     Mit dem Laden stimmen Sie der <a href="/datenschutz">Datenschutzerklärung</a> von Google zu.</p>
-  <button onclick="loadMap()" class="btn">Karte laden</button>
-</div>
-<script>
-function loadMap() {
-  document.getElementById('map-wrapper').innerHTML =
-    '<iframe src="https://maps.google.com/maps?q=..." loading="lazy" width="100%" height="400"></iframe>';
-}
-</script>
+<!-- Kern der Vorlage (vollständig in templates/two-click-map.html) -->
+<button class="button button--primary js-load-map"
+        data-map-url="https://www.google.com/maps/embed?pb=DEINE_EMBED_URL">
+  Karte laden
+</button>
 ```
 
 ## Impressum & Datenschutz — Pflichtseiten
@@ -73,10 +81,12 @@ Beide immer anlegen. Ohne Kundeninhalt: Platzhalter mit deutlichem Hinweis.
 
 ```html
 <div class="form__group form__group--checkbox">
-  <input type="checkbox" id="datenschutz" name="datenschutz" value="1" required>
-  <label for="datenschutz">
+  <!-- name="privacy" — muss zu $_POST['privacy'] in server/contact.php passen! -->
+  <input type="checkbox" id="privacy" name="privacy" required aria-required="true">
+  <label for="privacy">
     Ich stimme der Verarbeitung meiner Daten gemäß
-    <a href="/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> zu. *
+    <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> zu.
+    <span aria-label="Pflichtfeld">*</span>
   </label>
 </div>
 ```

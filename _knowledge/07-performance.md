@@ -18,16 +18,17 @@
   <title>...</title>
 
   <!-- 1. Kritische Fonts vorab laden (DSGVO: nur lokale Fonts!) -->
-  <link rel="preload" href="/assets/fonts/display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/fonts/body.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Relative Pfade (ohne führenden Slash) — funktionieren im Root UND im Test-Unterverzeichnis, siehe Pfad-Konvention in CLAUDE.md -->
+  <link rel="preload" href="assets/fonts/display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/body.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- 2. Hero-Bild vorab laden (nur above-the-fold!) -->
-  <link rel="preload" as="image" href="/assets/img/hero.webp">
+  <link rel="preload" as="image" href="assets/img/hero.webp">
 
   <!-- 3. CSS (render-blocking — so klein wie möglich halten) -->
-  <link rel="stylesheet" href="/assets/css/normalize.css">
-  <link rel="stylesheet" href="/assets/css/variables.css">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/normalize.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 ```
 
@@ -83,7 +84,7 @@
 ```html
 <!-- fetchpriority="high" + kein lazy + width/height Pflicht -->
 <img
-  src="/assets/img/hero.webp"
+  src="assets/img/hero.webp"
   alt="Beschreibender Alt-Text"
   width="1200"
   height="600"
@@ -97,14 +98,14 @@
   <!-- WebP für moderne Browser -->
   <source
     type="image/webp"
-    srcset="/assets/img/team-400.webp 400w,
-            /assets/img/team-800.webp 800w,
-            /assets/img/team-1200.webp 1200w"
+    srcset="assets/img/team-400.webp 400w,
+            assets/img/team-800.webp 800w,
+            assets/img/team-1200.webp 1200w"
     sizes="(max-width: 768px) 100vw, 50vw"
   >
   <!-- JPG/PNG als Fallback für ältere Browser -->
   <img
-    src="/assets/img/team-800.jpg"
+    src="assets/img/team-800.jpg"
     alt="Das 5-köpfige Team von Muster GmbH im Büro"
     width="800"
     height="600"
@@ -128,9 +129,10 @@ Wenn nur eine Bildgröße vorhanden: mindestens WebP + width/height + loading="l
 ## Fonts — @font-face korrekt
 
 ```css
+/* url() in CSS ist relativ zur CSS-Datei (assets/css/) → ../fonts/ */
 @font-face {
   font-family: 'DisplayFont';
-  src: url('/assets/fonts/display.woff2') format('woff2');
+  src: url('../fonts/display.woff2') format('woff2');
   font-weight: 400 700;
   font-style: normal;
   font-display: swap; /* Verhindert FOIT, zeigt Fallback-Font bis geladen */
@@ -143,8 +145,16 @@ Wenn nur eine Bildgröße vorhanden: mindestens WebP + width/height + loading="l
 
 ```html
 <!-- Immer am Body-Ende ODER mit defer im Head -->
-<script src="/assets/js/main.js" defer></script>
+<script src="assets/js/main.js" defer></script>
 ```
+
+**„Keine externen CDN-Abhängigkeiten" richtig verstanden:** Verboten ist das
+*Laden von fremden Servern* (unpkg, jsdelivr, cdnjs, fonts.googleapis.com, …).
+Lokal vendorte Third-Party-Dateien in `public/assets/js/vendor/` (z. B. Lenis,
+GSAP, Vanta — siehe `09-motion-design.md`) sind davon **nicht** betroffen: Sie
+werden vom eigenen Server ausgeliefert, laufen unter `script-src 'self'` und
+übertragen keine Besucherdaten an Dritte. Das JS-Gewicht zählt trotzdem —
+jede Library muss durch den Brief gerechtfertigt sein.
 
 ```javascript
 // Intersection Observer für Einblend-Animationen
@@ -188,6 +198,7 @@ Regeln:
 - [ ] `font-display: swap` in allen `@font-face` Regeln
 - [ ] JS: `defer` oder am Body-Ende
 - [ ] Keine ungenutzten CSS-Regeln
-- [ ] Keine externen CDN-Abhängigkeiten
+- [ ] Keine externen CDN-Abhängigkeiten (lokal vendorte Dateien in `assets/js/vendor/` sind erlaubt)
+- [ ] Bei Vanta-Einsatz: Bundle-Size geprüft (~120 kB gzipped extra wegen Three.js) — nur im Hero, nur auf Seiten die es nutzen, Effekt durch Brief gerechtfertigt
 - [ ] Gzip/Deflate in .htaccess aktiviert
 - [ ] Browser-Caching in .htaccess konfiguriert (1 Jahr für Assets)

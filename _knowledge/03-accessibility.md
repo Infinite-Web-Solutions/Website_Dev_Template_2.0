@@ -36,7 +36,7 @@ Bei mehrsprachigen Projekten: `lang`-Attribut der jeweiligen Seite bestimmt die 
   <header role="banner">
     <nav aria-label="Hauptnavigation">
       <ul>
-        <li><a href="/" aria-current="page">Home</a></li>
+        <li><a href="index.html" aria-current="page">Home</a></li>
       </ul>
       <button aria-expanded="false" aria-controls="mobile-menu" aria-label="Menü öffnen">
         <span aria-hidden="true">&#9776;</span>
@@ -125,3 +125,13 @@ document.addEventListener('keydown', (e) => {
   }
 });
 ```
+
+## Motion & Animationen (WCAG 2.3.3)
+
+Bewegungseffekte können bei vestibulären Störungen Schwindel und Übelkeit
+auslösen. Die Systemeinstellung „Bewegung reduzieren" MUSS respektiert werden —
+per `@media (prefers-reduced-motion: reduce)` im CSS und per
+`window.matchMedia('(prefers-reduced-motion: reduce)')` vor jeder
+JS-Animations-Initialisierung. Details und Pflicht-Pattern: `09-motion-design.md`.
+
+- [ ] Bei Motion-Libraries (Lenis/GSAP/Vanta): `prefers-reduced-motion` implementiert und getestet
