@@ -1,5 +1,6 @@
 <!-- Sicheres Kontaktformular -->
-<!-- Enthält Honeypot und CSRF-Platzhalter (sollte im PHP-Betrieb dynamisch über die Session befüllt werden). -->
+<!-- CSRF-Schutz erfolgt serverseitig per Same-Origin-Check in server/contact.php
+     (Session-Tokens sind in statischem HTML nicht einbettbar). -->
 <section class="contact-section section">
   <div class="container">
     <div class="contact-grid">
@@ -18,44 +19,50 @@
 
       <!-- Formular -->
       <div class="contact-form-wrapper">
-        <form action="/server/contact.php" method="POST" class="form js-contact-form" novalidate>
+        <!-- Relativer Pfad: funktioniert im Root UND im Test-Unterverzeichnis -->
+        <form action="server/contact.php" method="POST" class="form js-contact-form" novalidate>
 
-          <!-- Sicherheit: Honeypot-Feld (Für Nutzer unsichtbar, fängt Bots ab) -->
-          <div class="form__group form__group--hidden" aria-hidden="true" style="display: none;">
+          <!-- Sicherheit: Honeypot-Feld (für Nutzer unsichtbar, fängt Bots ab)
+               CSS: .form__group--hidden { position: absolute; left: -9999px; } -->
+          <div class="form__group form__group--hidden" aria-hidden="true">
             <label for="website">Website (nicht ausfüllen)</label>
             <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
           </div>
 
           <div class="form__group">
-            <label for="name" class="form__label">Name <span class="required" aria-label="Erforderlich">*</span></label>
-            <input type="text" id="name" name="name" class="form__input" required autocomplete="name">
-            <span class="form__error" id="name-error" aria-live="polite"></span>
+            <label for="name" class="form__label">Name <span class="required" aria-label="Pflichtfeld">*</span></label>
+            <input type="text" id="name" name="name" class="form__input" required aria-required="true"
+                   aria-describedby="name-error" autocomplete="name">
+            <span class="form__error" id="name-error" role="alert" aria-live="polite"></span>
           </div>
 
           <div class="form__group">
-            <label for="email" class="form__label">E-Mail <span class="required" aria-label="Erforderlich">*</span></label>
-            <input type="email" id="email" name="email" class="form__input" required autocomplete="email">
-            <span class="form__error" id="email-error" aria-live="polite"></span>
+            <label for="email" class="form__label">E-Mail <span class="required" aria-label="Pflichtfeld">*</span></label>
+            <input type="email" id="email" name="email" class="form__input" required aria-required="true"
+                   aria-describedby="email-error" autocomplete="email">
+            <span class="form__error" id="email-error" role="alert" aria-live="polite"></span>
           </div>
 
           <div class="form__group">
-            <label for="message" class="form__label">Ihre Nachricht <span class="required" aria-label="Erforderlich">*</span></label>
-            <textarea id="message" name="message" class="form__textarea" rows="5" required minlength="10" maxlength="5000"></textarea>
-            <span class="form__error" id="message-error" aria-live="polite"></span>
+            <label for="message" class="form__label">Ihre Nachricht <span class="required" aria-label="Pflichtfeld">*</span></label>
+            <textarea id="message" name="message" class="form__textarea" rows="5" required aria-required="true"
+                      aria-describedby="message-error" minlength="10" maxlength="5000"></textarea>
+            <span class="form__error" id="message-error" role="alert" aria-live="polite"></span>
           </div>
 
           <div class="form__group form__group--checkbox">
-            <input type="checkbox" id="privacy" name="privacy" class="form__checkbox" required>
+            <input type="checkbox" id="privacy" name="privacy" class="form__checkbox" required
+                   aria-required="true" aria-describedby="privacy-error">
             <label for="privacy" class="form__label-checkbox">
-              Ich habe die <a href="/datenschutz.html" target="_blank">Datenschutzerklärung</a> zur Kenntnis genommen. Ich stimme zu, dass meine Angaben zur Kontaktaufnahme gespeichert werden. <span class="required" aria-label="Erforderlich">*</span>
+              Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> zur Kenntnis genommen. Ich stimme zu, dass meine Angaben zur Kontaktaufnahme gespeichert werden. <span class="required" aria-label="Pflichtfeld">*</span>
             </label>
-            <span class="form__error" id="privacy-error" aria-live="polite"></span>
+            <span class="form__error" id="privacy-error" role="alert" aria-live="polite"></span>
           </div>
 
           <button type="submit" class="button button--primary form__submit">Nachricht senden</button>
 
-          <!-- Formular Statusmeldungen -->
-          <div class="form__status js-form-status" aria-live="polite" style="display: none;"></div>
+          <!-- Formular-Statusmeldung (hidden-Attribut statt Inline-Style) -->
+          <div class="form__status js-form-status" role="status" aria-live="polite" hidden></div>
         </form>
       </div>
 
@@ -65,18 +72,17 @@
 
 <!--
 <script>
-// Einfaches JS-Validierungsbeispiel
+// Validierung + AJAX-Versand (in main.js übernehmen)
 document.querySelector('.js-contact-form')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.target;
   const statusEl = form.querySelector('.js-form-status');
 
-  // Basis-Validierungsprüfungen
-  let isValid = true;
   // Vorherige Fehler löschen
+  let isValid = true;
   form.querySelectorAll('.form__error').forEach(el => el.textContent = '');
 
-  if (!form.name.value.trim()) {
+  if (form.name.value.trim().length < 2) {
     form.querySelector('#name-error').textContent = 'Bitte geben Sie Ihren Namen ein.';
     isValid = false;
   }
@@ -92,31 +98,32 @@ document.querySelector('.js-contact-form')?.addEventListener('submit', async (e)
     form.querySelector('#privacy-error').textContent = 'Bitte stimmen Sie den Datenschutzbestimmungen zu.';
     isValid = false;
   }
-
   if (!isValid) return;
 
-  statusEl.textContent = 'Wird gesendet...';
-  statusEl.className = 'form__status form__status--loading';
-  statusEl.style.display = 'block';
+  statusEl.textContent = 'Wird gesendet…';
+  statusEl.className = 'form__status form__status--loading js-form-status';
+  statusEl.hidden = false;
 
   try {
-    const formData = new FormData(form);
     const response = await fetch(form.action, {
       method: 'POST',
-      body: formData,
+      body: new FormData(form),
       headers: { 'Accept': 'application/json' }
     });
+    const data = await response.json();
 
-    if (response.ok) {
-      statusEl.textContent = 'Vielen Dank für Ihre Nachricht! Wir melden uns in Kürze.';
-      statusEl.className = 'form__status form__status--success';
+    if (response.ok && data.success) {
+      statusEl.textContent = data.message || 'Vielen Dank für Ihre Nachricht! Wir melden uns in Kürze.';
+      statusEl.className = 'form__status form__status--success js-form-status';
       form.reset();
     } else {
-      throw new Error('Fehler beim Senden');
+      // Serverseitige Fehlermeldung (Validierung, Rate Limit) anzeigen
+      statusEl.textContent = data.message || 'Es gab ein Problem beim Senden.';
+      statusEl.className = 'form__status form__status--error js-form-status';
     }
   } catch (error) {
     statusEl.textContent = 'Es gab ein Problem beim Senden. Bitte versuchen Sie es später erneut.';
-    statusEl.className = 'form__status form__status--error';
+    statusEl.className = 'form__status form__status--error js-form-status';
   }
 });
 </script>

@@ -11,14 +11,17 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
-  Header always set X-XSS-Protection "1; mode=block"
+  # X-XSS-Protection ist veraltet — "0" deaktiviert den fehleranfälligen Auditor alter Browser (OWASP-Empfehlung)
+  Header always set X-XSS-Protection "0"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 
   # Content Security Policy (CSP)
-  # ANPASSEN: Wenn externe Fonts, Maps oder Analytics verwendet werden, muss dies hier erlaubt werden!
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-src 'self' https://www.google.com/maps/; object-src 'none'; base-uri 'self'; form-action 'self'"
+  # ANPASSEN je Projekt: frame-src für Google Maps nur behalten wenn Two-Click-Map im Einsatz.
+  # Kein 'unsafe-inline' für script-src — alles JS gehört in main.js / vendor-Dateien!
+  # style-src 'unsafe-inline' ist nötig für style-Attribute (z.B. dynamisches Ein-/Ausblenden per JS).
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src https://www.google.com/maps/; object-src 'none'; base-uri 'self'; form-action 'self'"
 </IfModule>
 
 # Verzeichnis-Browsing deaktivieren
@@ -29,6 +32,12 @@ Options -Indexes
   Order Allow,Deny
   Deny from all
 </FilesMatch>
+
+# SMTP-Zugangsdaten niemals ausliefern
+<Files "mail-config.php">
+  Order Allow,Deny
+  Deny from all
+</Files>
 
 # Gzip / Deflate Komprimierung
 <IfModule mod_deflate.c>

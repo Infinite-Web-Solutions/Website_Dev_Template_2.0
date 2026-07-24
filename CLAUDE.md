@@ -151,7 +151,7 @@ docs/
 - [ ] .htaccess: alle Security Headers gesetzt
 - [ ] CSP: passt zum tatsächlichen Code (kein wildcard)
 - [ ] HTTPS-Redirect in .htaccess
-- [ ] Formular: CSRF-Token, Honeypot, Rate Limiting, Input-Sanitierung
+- [ ] Formular: CSRF-Schutz (Same-Origin-Check), Honeypot, Rate Limiting, Input-Sanitierung
 - [ ] server/contact.php: PHPMailer, kein mail()
 
 ### SEO (Pflicht)
