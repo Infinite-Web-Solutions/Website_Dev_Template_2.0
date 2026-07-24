@@ -1,0 +1,13 @@
+# Vendorte Third-Party-Libraries: generiert/minifiziert.
+# - linguist-generated: aus Sprachstatistik & PR-Diffs ausblenden
+# - -diff: git zeigt keinen Zeileninhalt (verhindert, dass riesige
+#   minifizierte Dateien in Diffs/Reviews landen — Token-Schutz)
+# three.min.js allein ist ~150k Token; niemals in den Kontext ziehen.
+public/assets/js/vendor/** linguist-generated=true -diff
+
+# Konsistente Zeilenenden für Textquellen
+*.md   text
+*.html text
+*.css  text
+*.js   text
+*.php  text

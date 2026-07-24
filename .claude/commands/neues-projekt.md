@@ -1,7 +1,8 @@
 # Neues Website-Projekt starten
 
-Lies zuerst CLAUDE.md vollständig, dann alle Dateien in _knowledge/ in numerischer Reihenfolge.
-Erst danach beginnst du zu arbeiten.
+Lies zuerst CLAUDE.md vollständig, dann `_knowledge/01`–`08` in numerischer Reihenfolge.
+`_knowledge/09-motion-design.md` nur laden, wenn der Brief unten Motion/Animationen
+vorsieht (Default: keins). Erst danach beginnst du zu arbeiten.
 
 ---
 
