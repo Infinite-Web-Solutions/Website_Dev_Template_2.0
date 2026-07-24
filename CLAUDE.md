@@ -23,8 +23,12 @@ Lies diese Dateien in exakt dieser Reihenfolge:
 6. _knowledge/06-forms.md
 7. _knowledge/07-performance.md
 8. _knowledge/08-seo-geo.md
-9. _knowledge/09-motion-design.md
-10. _briefs/customer-brief.md
+9. _briefs/customer-brief.md
+
+**Bedarfslektüre (nur bei Bedarf laden — spart Kontext):**
+- `_knowledge/09-motion-design.md` — **nur** lesen, wenn `customer-brief.md`
+  Motion/Animationen vorsieht (Stil „modern/bold", „Tech-Startup",
+  „Premium-Feel"). Andernfalls überspringen — keine Motion-Library ist Default.
 
 ## Workflow (IMMER exakt diese Reihenfolge)
 
@@ -275,6 +279,7 @@ public/assets/fonts/
 ## Was du NIEMALS tust
 - Bootstrap, Tailwind, jQuery per CDN ohne explizite Anfrage
 - Lenis/GSAP/Vanta.js von externem CDN laden — immer lokal vendoren (public/assets/js/vendor/)
+- Minifizierte Vendor-Dateien in `public/assets/js/vendor/` lesen, greppen oder in den Kontext ziehen (three.min.js ≈ 150k Token!) — sie sind fertige Libraries, nicht zu bearbeiten. Nur per `<script src>` einbinden.
 - Google Fonts extern laden (fonts.googleapis.com)
 - ARIA-Labels, Button-Texte oder Fehlermeldungen auf Englisch wenn die Website auf Deutsch ist
 - outline: none ohne alternativen Fokus-Indikator
