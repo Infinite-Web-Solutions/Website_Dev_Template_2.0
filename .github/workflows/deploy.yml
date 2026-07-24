@@ -40,13 +40,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy via FTP
+      - name: Deploy public/ via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          protocol: ftp
+          protocol: ftps
           port: 21
           local-dir: ./public/
           # FTP_BASE_DIR = Webroot von infinitewebsolutions.de
@@ -58,6 +58,26 @@ jobs:
             **/.git*/**
             **/node_modules/**
             **/*.map
+          dangerous-clean-slate: false
+          log-level: standard
+
+      # server/contact.php muss mit auf den Server, sonst läuft die
+      # Formular-Action (action="server/contact.php") live ins 404.
+      # mail-config.php ist gitignored und daher nie im Checkout.
+      - name: Deploy server/ via FTPS (Formular-Handler)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: ./server/
+          server-dir: ${{ secrets.FTP_BASE_DIR }}/${{ github.event.repository.name }}/server/
+          state-name: .ftp-deploy-sync-state-server.json
+          exclude: |
+            **/.git*
+            **/mail-config.php
           dangerous-clean-slate: false
           log-level: standard
 

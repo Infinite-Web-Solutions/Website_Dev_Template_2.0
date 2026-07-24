@@ -49,6 +49,6 @@ FEEDBACK:       [Leer bei Iteration 1 — bei Folgeiteration: Änderungswünsche
 ---
 
 **WICHTIGER HINWEIS ZUM BUILD:**
-Verwende für die Umsetzung in Phase 3 zwingend die vordefinierten UI-Komponenten aus dem `templates/` Ordner (z.B. Navigation, Hero, Grid, Formular) als Ausgangsbasis, um höchste Qualität (Accessibility, Performance) sicherzustellen! Kopiere `.htaccess.template` und das sichere `server/contact.php`.
+Verwende für die Umsetzung in Phase 3 zwingend die vordefinierten UI-Komponenten aus dem `templates/` Ordner (z.B. Navigation, Hero, Grid, Formular) als Ausgangsbasis, um höchste Qualität (Accessibility, Performance) sicherzustellen! Kopiere `.htaccess.template` nach `public/.htaccess` — das vorhandene `server/contact.php` bleibt wo es ist (wird automatisch mitdeployt).
 
 Starte nun mit Phase 1 — Recherche. Warte nach jeder Phase auf meine Bestätigung.
