@@ -31,36 +31,60 @@
   const toggle = document.querySelector('.js-menu-toggle');
   const nav = document.querySelector('.js-main-nav');
 
+  function closeMenu() {
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Menü öffnen');
+    nav.classList.remove('is-open');
+    document.body.classList.remove('has-scroll-lock');
+  }
+
   if (toggle && nav) {
     toggle.addEventListener('click', () => {
-      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', !isExpanded);
-      toggle.setAttribute('aria-label', !isExpanded ? 'Menü schließen' : 'Menü öffnen');
-      nav.classList.toggle('is-open');
-      document.body.classList.toggle('has-scroll-lock'); // Verhindert Scrollen bei offenem Menü
+      const willOpen = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(willOpen));
+      toggle.setAttribute('aria-label', willOpen ? 'Menü schließen' : 'Menü öffnen');
+      nav.classList.toggle('is-open', willOpen);
+      document.body.classList.toggle('has-scroll-lock', willOpen); // Verhindert Scrollen bei offenem Menü
+    });
+
+    // Escape schließt das Menü und gibt den Fokus zurück (WCAG-Tastaturbedienung)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        closeMenu();
+        toggle.focus();
+      }
     });
   }
 
-  // Sticky Header Logik
+  // Sticky Header — Scroll-Events per requestAnimationFrame gedrosselt (INP/Performance)
   const header = document.querySelector('.js-header');
   let lastScroll = 0;
+  let ticking = false;
 
-  window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
+  function updateHeader() {
+    const currentScroll = window.scrollY;
     if (currentScroll <= 0) {
       header.classList.remove('is-sticky');
-      return;
-    }
-    if (currentScroll > lastScroll && !header.classList.contains('is-hidden')) {
-      // Nach unten scrollen
+    } else if (currentScroll > lastScroll && !header.classList.contains('is-hidden')) {
+      // Nach unten scrollen → Header ausblenden
       header.classList.remove('is-sticky');
       header.classList.add('is-hidden');
     } else if (currentScroll < lastScroll && header.classList.contains('is-hidden')) {
-      // Nach oben scrollen
+      // Nach oben scrollen → Header einblenden
       header.classList.remove('is-hidden');
       header.classList.add('is-sticky');
     }
     lastScroll = currentScroll;
-  });
+    ticking = false;
+  }
+
+  if (header) {
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateHeader);
+        ticking = true;
+      }
+    }, { passive: true });
+  }
 </script>
 -->
